@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BookitGY</title>
+    <meta name="description" content="Find and book services in Guyana with BookitGY." />
+    <style>
+      :root { --green:#16a34a; --bg:#0b0f0c; --card:#0f1711; --text:#e7f2ea; --muted:#b7c7bc; }
+      body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:linear-gradient(160deg,#06110a,var(--bg)); color:var(--text); }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 48px 20px; }
+      .nav { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom: 40px; }
+      .brand { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:0.4px; }
+      .dot { width:12px; height:12px; border-radius:999px; background:var(--green); box-shadow:0 0 22px rgba(22,163,74,.55); }
+      .links a { color:var(--muted); text-decoration:none; margin-left:16px; font-size:14px; }
+      .links a:hover { color:var(--text); }
+      .hero { display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; align-items:center; }
+      @media (max-width: 860px){ .hero { grid-template-columns:1fr; } }
+      .card { background: rgba(15,23,17,.78); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding: 26px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+      h1 { margin: 0 0 10px; font-size: 42px; line-height: 1.08; }
+      p { margin: 0 0 14px; color: var(--muted); line-height:1.5; }
+      .cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+      .btn { display:inline-block; padding: 12px 16px; border-radius: 12px; text-decoration:none; font-weight:700; }
+      .btn.primary { background: var(--green); color: #041308; }
+      .btn.ghost { border:1px solid rgba(255,255,255,.14); color: var(--text); background: rgba(255,255,255,.04); }
+      .note { font-size: 12px; color: rgba(183,199,188,.85); margin-top:10px; }
+      .grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-top:18px; }
+      @media (max-width: 860px){ .grid { grid-template-columns:1fr; } }
+      .pill { padding:12px; border-radius: 14px; border:1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); color: var(--muted); }
+      footer { margin-top: 48px; color: rgba(183,199,188,.8); font-size: 13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+      footer a { color: rgba(183,199,188,.9); text-decoration:none; }
+      footer a:hover { color: var(--text); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="nav">
+        <div class="brand"><span class="dot"></span> BookitGY</div>
+        <div class="links">
+          <a href="/privacy">Privacy</a>
+          <a href="/support">Support</a>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="card">
+          <h1>Find and book services in Guyana.</h1>
+          <p>BookitGY helps customers discover local providers and schedule appointments quickly.</p>
+
+          <div class="cta">
+            <!-- Replace # with your store links later -->
+            <a class="btn primary" href="#" aria-label="Get it on Google Play">Google Play (coming soon)</a>
+            <a class="btn ghost" href="#" aria-label="Download on the App Store">App Store (coming soon)</a>
+          </div>
+
+          <div class="note">
+            Tip: Once your store links are live, paste them into the buttons above.
+          </div>
+
+          <div class="grid">
+            <div class="pill"><strong style="color:var(--text)">Nearby search</strong><br/>Find providers close to you.</div>
+            <div class="pill"><strong style="color:var(--text)">Appointments</strong><br/>Book and manage bookings.</div>
+            <div class="pill"><strong style="color:var(--text)">Offline payments</strong><br/>Payments happen directly with the provider.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin:0 0 10px">Contact</h2>
+          <p style="margin:0 0 10px">Need help? Reach us anytime:</p>
+          <p style="margin:0"><strong style="color:var(--text)">Email:</strong> <a href="mailto:support@bookitgy.com" style="color:var(--text)">support@bookitgy.com</a></p>
+          <p class="note" style="margin-top:12px">This site is used for app compliance and support. The core product is the mobile app.</p>
+        </div>
+      </div>
+
+      <footer>
+        <div>© <span id="y"></span> BookitGY</div>
+        <div>
+          <a href="/privacy">Privacy Policy</a> ·
+          <a href="/support">Support</a>
+        </div>
+      </footer>
+    </div>
+    <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  </body>
+</html>
