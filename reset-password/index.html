@@ -81,6 +81,18 @@
         );
       };
 
+      const apiBaseUrl = window.API_BASE_URL || "";
+      const resetEndpointPath = "/auth/password-reset";
+
+      const buildApiUrl = (path) => {
+        if (!apiBaseUrl) {
+          return path;
+        }
+        return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
+      };
+
+      const isDevMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         statusEl.style.display = "none";
@@ -105,7 +117,13 @@
         }
 
         try {
-          const response = await fetch("/auth/reset-password", {
+          const requestUrl = buildApiUrl(resetEndpointPath);
+
+          if (isDevMode) {
+            console.info("Reset password request URL:", requestUrl);
+          }
+
+          const response = await fetch(requestUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token, new_password: newPassword }),
@@ -118,8 +136,13 @@
             return;
           }
 
+          if (response.status === 404) {
+            setStatus("Password reset service unavailable", "error");
+            return;
+          }
+
           const payload = await response.json().catch(() => ({}));
-          const tokenErrorStatuses = [400, 401, 403, 404, 410];
+          const tokenErrorStatuses = [400, 401, 403, 410];
           const tokenErrorMessage = typeof payload?.message === "string" && /token|expired|invalid/i.test(payload.message);
 
           if (tokenErrorStatuses.includes(response.status) || tokenErrorMessage) {

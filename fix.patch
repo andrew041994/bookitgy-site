@@ -1,148 +1,114 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/reset-password/index.html b/reset-password/index.html
-new file mode 100644
-index 0000000000000000000000000000000000000000..efd1b202cb80e64f7412cf10df01e881bc49d15a
---- /dev/null
+index efd1b202cb80e64f7412cf10df01e881bc49d15a..dafdc1204d9f9c606293e9aa0c1e20e78b026ed3 100644
+--- a/reset-password/index.html
 +++ b/reset-password/index.html
-@@ -0,0 +1,138 @@
-+<!doctype html>
-+<html lang="en">
-+  <head>
-+    <meta charset="utf-8" />
-+    <meta name="viewport" content="width=device-width,initial-scale=1" />
-+    <title>Reset Password – BookitGY</title>
-+    <meta name="description" content="Reset your BookitGY password." />
-+    <style>
-+      :root { --green:#16a34a; --bg:#0b0f0c; --card:#0f1711; --text:#e7f2ea; --muted:#b7c7bc; --danger:#ef4444; }
-+      body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:linear-gradient(160deg,#06110a,var(--bg)); color:var(--text); }
-+      .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 32px 20px; }
-+      .card { width:100%; max-width: 520px; background: rgba(15,23,17,.85); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding: 28px; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
-+      .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:0.4px; margin-bottom:18px; }
-+      .dot { width:12px; height:12px; border-radius:999px; background:var(--green); box-shadow:0 0 22px rgba(22,163,74,.55); }
-+      h1 { margin: 0 0 8px; font-size: 28px; }
-+      p { margin: 0 0 12px; color: var(--muted); line-height:1.5; }
-+      label { display:block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
-+      input { width:100%; padding: 12px 14px; border-radius: 12px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: var(--text); font-size: 15px; }
-+      input:focus { outline: 2px solid rgba(22,163,74,.5); border-color: rgba(22,163,74,.6); }
-+      .btn { width:100%; margin-top:18px; padding: 12px 16px; border-radius: 12px; border:none; font-weight:700; cursor:pointer; background: var(--green); color: #041308; }
-+      .helper { font-size: 12px; color: var(--muted); margin-top:8px; }
-+      .status { margin-top: 16px; padding: 12px 14px; border-radius: 12px; font-size: 14px; }
-+      .status.error { background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color: #fecaca; }
-+      .status.success { background: rgba(22,163,74,.12); border:1px solid rgba(22,163,74,.35); color: #bbf7d0; }
-+      .link { color: var(--text); text-decoration:none; }
-+      .link:hover { text-decoration:underline; }
-+    </style>
-+  </head>
-+  <body>
-+    <div class="wrap">
-+      <div class="card">
-+        <div class="brand"><span class="dot"></span> BookitGY</div>
-+        <h1>Reset your password</h1>
-+        <p>Enter a new password below to finish resetting your BookitGY account.</p>
+@@ -59,80 +59,103 @@
+ 
+       const passwordRules = {
+         length: /^.{6,8}$/,
+         uppercase: /[A-Z]/,
+         lowercase: /[a-z]/,
+         number: /\d/,
+         special: /[^A-Za-z0-9]/,
+       };
+ 
+       const setStatus = (message, type) => {
+         statusEl.textContent = message;
+         statusEl.className = `status ${type}`;
+         statusEl.style.display = "block";
+       };
+ 
+       const matchesRules = (value) => {
+         return (
+           passwordRules.length.test(value) &&
+           passwordRules.uppercase.test(value) &&
+           passwordRules.lowercase.test(value) &&
+           passwordRules.number.test(value) &&
+           passwordRules.special.test(value)
+         );
+       };
+ 
++      const apiBaseUrl = window.API_BASE_URL || "";
++      const resetEndpointPath = "/auth/password-reset";
 +
-+        <form id="reset-form">
-+          <label for="new-password">New password</label>
-+          <input id="new-password" name="new-password" type="password" autocomplete="new-password" required />
-+
-+          <label for="confirm-password">Confirm new password</label>
-+          <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
-+
-+          <div class="helper">
-+            Passwords must be 6–8 characters and include uppercase, lowercase, a number, and a special character.
-+          </div>
-+
-+          <button class="btn" type="submit">Reset password</button>
-+        </form>
-+
-+        <div id="status" class="status" style="display:none"></div>
-+      </div>
-+    </div>
-+
-+    <script>
-+      const form = document.getElementById("reset-form");
-+      const statusEl = document.getElementById("status");
-+      const urlParams = new URLSearchParams(window.location.search);
-+      const token = urlParams.get("token");
-+
-+      const passwordRules = {
-+        length: /^.{6,8}$/,
-+        uppercase: /[A-Z]/,
-+        lowercase: /[a-z]/,
-+        number: /\d/,
-+        special: /[^A-Za-z0-9]/,
++      const buildApiUrl = (path) => {
++        if (!apiBaseUrl) {
++          return path;
++        }
++        return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
 +      };
 +
-+      const setStatus = (message, type) => {
-+        statusEl.textContent = message;
-+        statusEl.className = `status ${type}`;
-+        statusEl.style.display = "block";
-+      };
++      const isDevMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 +
-+      const matchesRules = (value) => {
-+        return (
-+          passwordRules.length.test(value) &&
-+          passwordRules.uppercase.test(value) &&
-+          passwordRules.lowercase.test(value) &&
-+          passwordRules.number.test(value) &&
-+          passwordRules.special.test(value)
-+        );
-+      };
+       form.addEventListener("submit", async (event) => {
+         event.preventDefault();
+         statusEl.style.display = "none";
+ 
+         if (!token) {
+           setStatus("This reset link is missing a token. Please request a new password reset.", "error");
+           return;
+         }
+ 
+         const newPassword = document.getElementById("new-password").value;
+         const confirmPassword = document.getElementById("confirm-password").value;
+ 
+         // Client-side validation for password match and rules.
+         if (newPassword !== confirmPassword) {
+           setStatus("Passwords do not match. Please try again.", "error");
+           return;
+         }
+ 
+         if (!matchesRules(newPassword)) {
+           setStatus("Password does not meet the required rules.", "error");
+           return;
+         }
+ 
+         try {
+-          const response = await fetch("/auth/reset-password", {
++          const requestUrl = buildApiUrl(resetEndpointPath);
 +
-+      form.addEventListener("submit", async (event) => {
-+        event.preventDefault();
-+        statusEl.style.display = "none";
++          if (isDevMode) {
++            console.info("Reset password request URL:", requestUrl);
++          }
 +
-+        if (!token) {
-+          setStatus("This reset link is missing a token. Please request a new password reset.", "error");
-+          return;
-+        }
-+
-+        const newPassword = document.getElementById("new-password").value;
-+        const confirmPassword = document.getElementById("confirm-password").value;
-+
-+        // Client-side validation for password match and rules.
-+        if (newPassword !== confirmPassword) {
-+          setStatus("Passwords do not match. Please try again.", "error");
-+          return;
-+        }
-+
-+        if (!matchesRules(newPassword)) {
-+          setStatus("Password does not meet the required rules.", "error");
-+          return;
-+        }
-+
-+        try {
-+          const response = await fetch("/auth/reset-password", {
-+            method: "POST",
-+            headers: { "Content-Type": "application/json" },
-+            body: JSON.stringify({ token, new_password: newPassword }),
-+          });
-+
-+          if (response.ok) {
-+            setStatus("Password reset successful. You can now log in.", "success");
-+            statusEl.innerHTML = `Password reset successful. <a class="link" href="/login">Go to login</a>.`;
-+            form.reset();
++          const response = await fetch(requestUrl, {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ token, new_password: newPassword }),
+           });
+ 
+           if (response.ok) {
+             setStatus("Password reset successful. You can now log in.", "success");
+             statusEl.innerHTML = `Password reset successful. <a class="link" href="/login">Go to login</a>.`;
+             form.reset();
+             return;
+           }
+ 
++          if (response.status === 404) {
++            setStatus("Password reset service unavailable", "error");
 +            return;
 +          }
 +
-+          const payload = await response.json().catch(() => ({}));
-+          const tokenErrorStatuses = [400, 401, 403, 404, 410];
-+          const tokenErrorMessage = typeof payload?.message === "string" && /token|expired|invalid/i.test(payload.message);
-+
-+          if (tokenErrorStatuses.includes(response.status) || tokenErrorMessage) {
-+            setStatus("This reset link is invalid or expired. Please request a new password reset.", "error");
-+            return;
-+          }
-+
-+          setStatus("We couldn't reset your password right now. Please try again later.", "error");
-+        } catch (error) {
-+          // Network or unexpected errors.
-+          setStatus("We couldn't reset your password right now. Please try again later.", "error");
-+        }
-+      });
-+    </script>
-+  </body>
-+</html>
+           const payload = await response.json().catch(() => ({}));
+-          const tokenErrorStatuses = [400, 401, 403, 404, 410];
++          const tokenErrorStatuses = [400, 401, 403, 410];
+           const tokenErrorMessage = typeof payload?.message === "string" && /token|expired|invalid/i.test(payload.message);
+ 
+           if (tokenErrorStatuses.includes(response.status) || tokenErrorMessage) {
+             setStatus("This reset link is invalid or expired. Please request a new password reset.", "error");
+             return;
+           }
+ 
+           setStatus("We couldn't reset your password right now. Please try again later.", "error");
+         } catch (error) {
+           // Network or unexpected errors.
+           setStatus("We couldn't reset your password right now. Please try again later.", "error");
+         }
+       });
+     </script>
+   </body>
+ </html>
  
 EOF
 )
