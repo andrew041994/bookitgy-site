@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <script>
+    <script type="module">
       const form = document.getElementById("reset-form");
       const statusEl = document.getElementById("status");
       const urlParams = new URLSearchParams(window.location.search);
@@ -81,8 +81,11 @@
         );
       };
 
-      const apiBaseUrl = window.API_BASE_URL || "";
-      const resetEndpointPath = "/auth/password-reset";
+      const apiBaseUrl =
+        import.meta.env?.VITE_API_BASE_URL ||
+        window.API_BASE_URL ||
+        "https://bookitgy.onrender.com";
+      const resetEndpointPath = "/auth/reset-password";
 
       const buildApiUrl = (path) => {
         if (!apiBaseUrl) {
@@ -137,15 +140,14 @@
           }
 
           if (response.status === 404) {
-            setStatus("Password reset service unavailable", "error");
+            setStatus("Password reset service unavailable.", "error");
             return;
           }
 
           const payload = await response.json().catch(() => ({}));
-          const tokenErrorStatuses = [400, 401, 403, 410];
-          const tokenErrorMessage = typeof payload?.message === "string" && /token|expired|invalid/i.test(payload.message);
+          const tokenErrorStatuses = [400, 401, 422];
 
-          if (tokenErrorStatuses.includes(response.status) || tokenErrorMessage) {
+          if (tokenErrorStatuses.includes(response.status)) {
             setStatus("This reset link is invalid or expired. Please request a new password reset.", "error");
             return;
           }
