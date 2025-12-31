@@ -1,128 +1,21 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/provider-landing.js b/provider-landing.js
-index 1c788bf6b9c8574d98acd99725d741182b6ee042..e7ecec4c53a256d691f1da8466d3187b67eb41a8 100644
---- a/provider-landing.js
-+++ b/provider-landing.js
-@@ -1,33 +1,117 @@
- export function renderProviderLanding(username) {
-   const safeUsername = decodeURIComponent(username || "").replace(/[^\w.-]/g, "");
-   document.title = safeUsername ? `Open ${safeUsername} in the app – BookitGY` : "BookitGY";
- 
-   const style = document.createElement("style");
-   style.textContent = `
-     :root { --green:#16a34a; --bg:#0b0f0c; --card:#0f1711; --text:#e7f2ea; --muted:#b7c7bc; }
-     body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 32px 20px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:linear-gradient(160deg,#06110a,var(--bg)); color:var(--text); }
-     .card { width:100%; max-width: 540px; background: rgba(15,23,17,.9); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,.35); text-align:center; }
-     .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:0.4px; justify-content:center; margin-bottom:16px; }
-     .dot { width:12px; height:12px; border-radius:999px; background:var(--green); box-shadow:0 0 22px rgba(22,163,74,.55); }
-     h1 { margin: 0 0 12px; font-size: 28px; }
-     p { margin: 0 0 18px; color: var(--muted); line-height:1.5; }
-     .actions { display:flex; flex-direction:column; gap:10px; }
-     .btn { display:inline-block; padding: 12px 16px; border-radius: 12px; text-decoration:none; font-weight:700; }
-     .btn.primary { background: var(--green); color: #041308; }
-     .btn.secondary { border:1px solid rgba(255,255,255,.14); color: var(--text); background: rgba(255,255,255,.04); }
-+    .provider-header { display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom: 16px; }
-+    .avatar { width: 86px; height: 86px; border-radius: 999px; object-fit: cover; border: 2px solid rgba(255,255,255,.12); box-shadow: 0 8px 20px rgba(0,0,0,.3); background: rgba(255,255,255,.06); display:none; }
-+    .avatar.visible { display:block; }
-+    .username { color: var(--muted); font-size: 14px; margin: 0; }
-   `;
-   document.head.appendChild(style);
- 
-   document.body.innerHTML = `
-     <main class="card">
-       <div class="brand"><span class="dot"></span> BookitGY</div>
--      <h1>Open ${safeUsername || "provider"} in the app</h1>
--      <p>Continue in the BookitGY mobile app to view this provider's profile, book services, and manage your appointments.</p>
-+      <div class="provider-header">
-+        <img id="provider-avatar" class="avatar" alt="Provider avatar" />
-+        <div>
-+          <h1 id="provider-title">Open ${safeUsername || "provider"} in the app</h1>
-+          <p id="provider-username" class="username">${safeUsername ? `@${safeUsername}` : ""}</p>
-+        </div>
-+      </div>
-+      <p id="provider-description">Continue in the BookitGY mobile app to view this provider's profile, book services, and manage your appointments.</p>
-       <div class="actions">
-         <a class="btn primary" href="bookitgy://provider/${safeUsername}">Open in app</a>
-         <a class="btn secondary" href="https://apps.apple.com" aria-label="Download on the App Store">Download on the App Store</a>
-         <a class="btn secondary" href="https://play.google.com/store" aria-label="Get it on Google Play">Get it on Google Play</a>
-       </div>
-     </main>
-   `;
-+
-+  if (!safeUsername) {
-+    return;
-+  }
-+
-+  const apiBaseUrl =
-+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
-+    window.API_BASE_URL ||
-+    "https://bookitgy.onrender.com";
-+
-+  const buildApiUrl = (path) => {
-+    if (!apiBaseUrl) {
-+      return path;
-+    }
-+    return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
-+  };
-+
-+  const titleEl = document.getElementById("provider-title");
-+  const descriptionEl = document.getElementById("provider-description");
-+  const usernameEl = document.getElementById("provider-username");
-+  const avatarEl = document.getElementById("provider-avatar");
-+
-+  const applyProviderData = (data) => {
-+    if (!data) return;
-+
-+    const displayName =
-+      data.displayName ||
-+      data.name ||
-+      data.businessName ||
-+      data.username ||
-+      safeUsername;
-+
-+    if (displayName) {
-+      titleEl.textContent = `Open ${displayName} in the app`;
-+      document.title = `Open ${displayName} in the app – BookitGY`;
-+    }
-+
-+    if (data.username) {
-+      usernameEl.textContent = `@${data.username}`;
-+    }
-+
-+    const avatarUrl = data.avatarUrl || data.photoUrl || data.profileImageUrl;
-+    if (avatarUrl) {
-+      avatarEl.src = avatarUrl;
-+      avatarEl.classList.add("visible");
-+    }
-+
-+    if (displayName) {
-+      descriptionEl.textContent = `Continue in the BookitGY mobile app to view ${displayName}'s profile, book services, and manage appointments.`;
-+    }
-+  };
-+
-+  const fetchProvider = async () => {
-+    try {
-+      const response = await fetch(
-+        buildApiUrl(`/public/providers/by-username/${encodeURIComponent(safeUsername)}`),
-+        {
-+          headers: { Accept: "application/json" },
-+        },
-+      );
-+
-+      if (!response.ok) {
-+        return;
+diff --git a/public/.well-known/apple-app-site-association b/public/.well-known/apple-app-site-association
+new file mode 100644
+index 0000000000000000000000000000000000000000..34a0704803ddb175553c85b69c26029a61462976
+--- /dev/null
++++ b/public/.well-known/apple-app-site-association
+@@ -0,0 +1,11 @@
++{
++  "applinks": {
++    "apps": [],
++    "details": [
++      {
++        "appID": "A623W7DFW2.com.bookitgy.app",
++        "paths": ["/*"]
 +      }
-+
-+      const payload = await response.json();
-+      applyProviderData(payload?.data || payload);
-+    } catch (error) {
-+      // Silently fail and keep the fallback content so the page remains usable.
-+      console.error("Failed to load provider", error);
-+    }
-+  };
-+
-+  fetchProvider();
- }
++    ]
++  }
++}
  
 EOF
 )

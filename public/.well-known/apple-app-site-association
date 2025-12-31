@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "A623W7DFW2.com.bookitgy.app",
+        "paths": ["/*"]
+      }
+    ]
+  }
+}
