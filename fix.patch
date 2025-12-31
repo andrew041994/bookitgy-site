@@ -1,21 +1,30 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/vercel.json b/vercel.json
-new file mode 100644
-index 0000000000000000000000000000000000000000..2979b30a10b3b0c064533d62d477bfe98cea387c
---- /dev/null
+index 2979b30a10b3b0c064533d62d477bfe98cea387c..9a84213ed97341dfa20a3f02a1596f19ca54860b 100644
+--- a/vercel.json
 +++ b/vercel.json
-@@ -0,0 +1,11 @@
-+{
-+  "headers": [
+@@ -1,11 +1,21 @@
+ {
+   "headers": [
+     {
+       "source": "/.well-known/apple-app-site-association",
+       "headers": [
+         { "key": "Content-Type", "value": "application/json" },
+         { "key": "Cache-Control", "value": "public, max-age=3600" }
+       ]
+     }
++  ],
++  "redirects": [
 +    {
-+      "source": "/.well-known/apple-app-site-association",
-+      "headers": [
-+        { "key": "Content-Type", "value": "application/json" },
-+        { "key": "Cache-Control", "value": "public, max-age=3600" }
-+      ]
++      "source": "/:path((?!\\.well-known/(?:apple-app-site-association|assetlinks\\.json)$).*)",
++      "has": [
++        { "type": "host", "value": "bookitgy.com" }
++      ],
++      "destination": "https://www.bookitgy.com/:path*",
++      "permanent": true
 +    }
-+  ]
-+}
+   ]
+ }
  
 EOF
 )

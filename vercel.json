@@ -7,5 +7,15 @@
         { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path((?!\\.well-known/(?:apple-app-site-association|assetlinks\\.json)$).*)",
+      "has": [
+        { "type": "host", "value": "bookitgy.com" }
+      ],
+      "destination": "https://www.bookitgy.com/:path*",
+      "permanent": true
+    }
   ]
 }
