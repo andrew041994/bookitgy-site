@@ -1,9 +1,9 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/vercel.json b/vercel.json
-index 2979b30a10b3b0c064533d62d477bfe98cea387c..9a84213ed97341dfa20a3f02a1596f19ca54860b 100644
+index 9a84213ed97341dfa20a3f02a1596f19ca54860b..d510869df48b42c430a1f2d46e35cd9f1d922d57 100644
 --- a/vercel.json
 +++ b/vercel.json
-@@ -1,11 +1,21 @@
+@@ -1,21 +1,27 @@
  {
    "headers": [
      {
@@ -12,17 +12,25 @@ index 2979b30a10b3b0c064533d62d477bfe98cea387c..9a84213ed97341dfa20a3f02a1596f19
          { "key": "Content-Type", "value": "application/json" },
          { "key": "Cache-Control", "value": "public, max-age=3600" }
        ]
-     }
-+  ],
-+  "redirects": [
++    },
 +    {
-+      "source": "/:path((?!\\.well-known/(?:apple-app-site-association|assetlinks\\.json)$).*)",
-+      "has": [
-+        { "type": "host", "value": "bookitgy.com" }
-+      ],
-+      "destination": "https://www.bookitgy.com/:path*",
-+      "permanent": true
-+    }
++      "source": "/.well-known/assetlinks.json",
++      "headers": [
++        { "key": "Content-Type", "value": "application/json" }
++      ]
+     }
+   ],
+   "redirects": [
+     {
+-      "source": "/:path((?!\\.well-known/(?:apple-app-site-association|assetlinks\\.json)$).*)",
++      "source": "/:path((?!\\.well-known/).*)",
+       "has": [
+         { "type": "host", "value": "bookitgy.com" }
+       ],
+-      "destination": "https://www.bookitgy.com/:path*",
++      "destination": "https://www.bookitgy.com/:path",
+       "permanent": true
+     }
    ]
  }
  

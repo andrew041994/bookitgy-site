@@ -6,15 +6,21 @@
         { "key": "Content-Type", "value": "application/json" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
+    },
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" }
+      ]
     }
   ],
   "redirects": [
     {
-      "source": "/:path((?!\\.well-known/(?:apple-app-site-association|assetlinks\\.json)$).*)",
+      "source": "/:path((?!\\.well-known/).*)",
       "has": [
         { "type": "host", "value": "bookitgy.com" }
       ],
-      "destination": "https://www.bookitgy.com/:path*",
+      "destination": "https://www.bookitgy.com/:path",
       "permanent": true
     }
   ]
