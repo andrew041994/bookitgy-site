@@ -1,20 +1,20 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/public/.well-known/apple-app-site-association b/public/.well-known/apple-app-site-association
+diff --git a/vercel.json b/vercel.json
 new file mode 100644
-index 0000000000000000000000000000000000000000..34a0704803ddb175553c85b69c26029a61462976
+index 0000000000000000000000000000000000000000..2979b30a10b3b0c064533d62d477bfe98cea387c
 --- /dev/null
-+++ b/public/.well-known/apple-app-site-association
++++ b/vercel.json
 @@ -0,0 +1,11 @@
 +{
-+  "applinks": {
-+    "apps": [],
-+    "details": [
-+      {
-+        "appID": "A623W7DFW2.com.bookitgy.app",
-+        "paths": ["/*"]
-+      }
-+    ]
-+  }
++  "headers": [
++    {
++      "source": "/.well-known/apple-app-site-association",
++      "headers": [
++        { "key": "Content-Type", "value": "application/json" },
++        { "key": "Cache-Control", "value": "public, max-age=3600" }
++      ]
++    }
++  ]
 +}
  
 EOF
