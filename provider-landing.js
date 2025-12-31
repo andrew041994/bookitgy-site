@@ -15,14 +15,24 @@ export function renderProviderLanding(username) {
     .btn { display:inline-block; padding: 12px 16px; border-radius: 12px; text-decoration:none; font-weight:700; }
     .btn.primary { background: var(--green); color: #041308; }
     .btn.secondary { border:1px solid rgba(255,255,255,.14); color: var(--text); background: rgba(255,255,255,.04); }
+    .provider-header { display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom: 16px; }
+    .avatar { width: 86px; height: 86px; border-radius: 999px; object-fit: cover; border: 2px solid rgba(255,255,255,.12); box-shadow: 0 8px 20px rgba(0,0,0,.3); background: rgba(255,255,255,.06); display:none; }
+    .avatar.visible { display:block; }
+    .username { color: var(--muted); font-size: 14px; margin: 0; }
   `;
   document.head.appendChild(style);
 
   document.body.innerHTML = `
     <main class="card">
       <div class="brand"><span class="dot"></span> BookitGY</div>
-      <h1>Open ${safeUsername || "provider"} in the app</h1>
-      <p>Continue in the BookitGY mobile app to view this provider's profile, book services, and manage your appointments.</p>
+      <div class="provider-header">
+        <img id="provider-avatar" class="avatar" alt="Provider avatar" />
+        <div>
+          <h1 id="provider-title">Open ${safeUsername || "provider"} in the app</h1>
+          <p id="provider-username" class="username">${safeUsername ? `@${safeUsername}` : ""}</p>
+        </div>
+      </div>
+      <p id="provider-description">Continue in the BookitGY mobile app to view this provider's profile, book services, and manage your appointments.</p>
       <div class="actions">
         <a class="btn primary" href="bookitgy://provider/${safeUsername}">Open in app</a>
         <a class="btn secondary" href="https://apps.apple.com" aria-label="Download on the App Store">Download on the App Store</a>
@@ -30,4 +40,78 @@ export function renderProviderLanding(username) {
       </div>
     </main>
   `;
+
+  if (!safeUsername) {
+    return;
+  }
+
+  const apiBaseUrl =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
+    window.API_BASE_URL ||
+    "https://bookitgy.onrender.com";
+
+  const buildApiUrl = (path) => {
+    if (!apiBaseUrl) {
+      return path;
+    }
+    return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
+  };
+
+  const titleEl = document.getElementById("provider-title");
+  const descriptionEl = document.getElementById("provider-description");
+  const usernameEl = document.getElementById("provider-username");
+  const avatarEl = document.getElementById("provider-avatar");
+
+  const applyProviderData = (data) => {
+    if (!data) return;
+
+    const displayName =
+      data.displayName ||
+      data.name ||
+      data.businessName ||
+      data.username ||
+      safeUsername;
+
+    if (displayName) {
+      titleEl.textContent = `Open ${displayName} in the app`;
+      document.title = `Open ${displayName} in the app – BookitGY`;
+    }
+
+    if (data.username) {
+      usernameEl.textContent = `@${data.username}`;
+    }
+
+    const avatarUrl = data.avatarUrl || data.photoUrl || data.profileImageUrl;
+    if (avatarUrl) {
+      avatarEl.src = avatarUrl;
+      avatarEl.classList.add("visible");
+    }
+
+    if (displayName) {
+      descriptionEl.textContent = `Continue in the BookitGY mobile app to view ${displayName}'s profile, book services, and manage appointments.`;
+    }
+  };
+
+  const fetchProvider = async () => {
+    try {
+      const response = await fetch(
+        buildApiUrl(`/public/providers/by-username/${encodeURIComponent(safeUsername)}`),
+        {
+          headers: { Accept: "application/json" },
+        },
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = await response.json();
+      applyProviderData(payload?.data || payload);
+    } catch (error) {
+      // Silently fail and keep the fallback content so the page remains usable.
+      console.error("Failed to load provider", error);
+    }
+  };
+
+  fetchProvider();
 }
