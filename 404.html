@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BookitGY</title>
+  </head>
+  <body>
+    <script type="module">
+      import { renderProviderLanding } from "./provider-landing.js";
+
+      const reserved = new Set(["", "privacy", "terms", "support", "confirmation", "reset-password"]);
+      const path = (window.location.pathname || "/").replace(/^\/+|\/+$/g, "");
+      const username = path.split("/")[0];
+
+      if (reserved.has(username)) {
+        window.location.href = `/${username}`;
+      } else {
+        renderProviderLanding(username || "provider");
+      }
+    </script>
+  </body>
+</html>

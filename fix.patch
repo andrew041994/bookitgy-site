@@ -1,148 +1,27 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/reset-password/index.html b/reset-password/index.html
-index dafdc1204d9f9c606293e9aa0c1e20e78b026ed3..8debe1a9df75c27e9eee710b701f3ef3cad59fa1 100644
---- a/reset-password/index.html
-+++ b/reset-password/index.html
-@@ -29,82 +29,85 @@
-   <body>
-     <div class="wrap">
-       <div class="card">
-         <div class="brand"><span class="dot"></span> BookitGY</div>
-         <h1>Reset your password</h1>
-         <p>Enter a new password below to finish resetting your BookitGY account.</p>
- 
-         <form id="reset-form">
-           <label for="new-password">New password</label>
-           <input id="new-password" name="new-password" type="password" autocomplete="new-password" required />
- 
-           <label for="confirm-password">Confirm new password</label>
-           <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
- 
-           <div class="helper">
-             Passwords must be 6–8 characters and include uppercase, lowercase, a number, and a special character.
-           </div>
- 
-           <button class="btn" type="submit">Reset password</button>
-         </form>
- 
-         <div id="status" class="status" style="display:none"></div>
-       </div>
-     </div>
- 
--    <script>
+diff --git a/terms/index.html b/terms/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..6228d1d4d7499eb261af91df3994aa1173e5e746
+--- /dev/null
++++ b/terms/index.html
+@@ -0,0 +1,17 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="utf-8" />
++    <meta name="viewport" content="width=device-width,initial-scale=1" />
++    <title>Terms – BookitGY</title>
++  </head>
++  <body>
 +    <script type="module">
-       const form = document.getElementById("reset-form");
-       const statusEl = document.getElementById("status");
-       const urlParams = new URLSearchParams(window.location.search);
-       const token = urlParams.get("token");
- 
-       const passwordRules = {
-         length: /^.{6,8}$/,
-         uppercase: /[A-Z]/,
-         lowercase: /[a-z]/,
-         number: /\d/,
-         special: /[^A-Za-z0-9]/,
-       };
- 
-       const setStatus = (message, type) => {
-         statusEl.textContent = message;
-         statusEl.className = `status ${type}`;
-         statusEl.style.display = "block";
-       };
- 
-       const matchesRules = (value) => {
-         return (
-           passwordRules.length.test(value) &&
-           passwordRules.uppercase.test(value) &&
-           passwordRules.lowercase.test(value) &&
-           passwordRules.number.test(value) &&
-           passwordRules.special.test(value)
-         );
-       };
- 
--      const apiBaseUrl = window.API_BASE_URL || "";
--      const resetEndpointPath = "/auth/password-reset";
-+      const apiBaseUrl =
-+        import.meta.env?.VITE_API_BASE_URL ||
-+        window.API_BASE_URL ||
-+        "https://bookitgy.onrender.com";
-+      const resetEndpointPath = "/auth/reset-password";
- 
-       const buildApiUrl = (path) => {
-         if (!apiBaseUrl) {
-           return path;
-         }
-         return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
-       };
- 
-       const isDevMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
- 
-       form.addEventListener("submit", async (event) => {
-         event.preventDefault();
-         statusEl.style.display = "none";
- 
-         if (!token) {
-           setStatus("This reset link is missing a token. Please request a new password reset.", "error");
-           return;
-         }
- 
-         const newPassword = document.getElementById("new-password").value;
-         const confirmPassword = document.getElementById("confirm-password").value;
- 
-         // Client-side validation for password match and rules.
-         if (newPassword !== confirmPassword) {
-           setStatus("Passwords do not match. Please try again.", "error");
-@@ -115,47 +118,46 @@
-           setStatus("Password does not meet the required rules.", "error");
-           return;
-         }
- 
-         try {
-           const requestUrl = buildApiUrl(resetEndpointPath);
- 
-           if (isDevMode) {
-             console.info("Reset password request URL:", requestUrl);
-           }
- 
-           const response = await fetch(requestUrl, {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ token, new_password: newPassword }),
-           });
- 
-           if (response.ok) {
-             setStatus("Password reset successful. You can now log in.", "success");
-             statusEl.innerHTML = `Password reset successful. <a class="link" href="/login">Go to login</a>.`;
-             form.reset();
-             return;
-           }
- 
-           if (response.status === 404) {
--            setStatus("Password reset service unavailable", "error");
-+            setStatus("Password reset service unavailable.", "error");
-             return;
-           }
- 
-           const payload = await response.json().catch(() => ({}));
--          const tokenErrorStatuses = [400, 401, 403, 410];
--          const tokenErrorMessage = typeof payload?.message === "string" && /token|expired|invalid/i.test(payload.message);
-+          const tokenErrorStatuses = [400, 401, 422];
- 
--          if (tokenErrorStatuses.includes(response.status) || tokenErrorMessage) {
-+          if (tokenErrorStatuses.includes(response.status)) {
-             setStatus("This reset link is invalid or expired. Please request a new password reset.", "error");
-             return;
-           }
- 
-           setStatus("We couldn't reset your password right now. Please try again later.", "error");
-         } catch (error) {
-           // Network or unexpected errors.
-           setStatus("We couldn't reset your password right now. Please try again later.", "error");
-         }
-       });
-     </script>
-   </body>
- </html>
++      import { renderInfoPage } from "../info-page.js";
++      renderInfoPage({
++        title: "Terms",
++        message: "This page is reserved for our terms of service.",
++      });
++    </script>
++  </body>
++</html>
  
 EOF
 )
