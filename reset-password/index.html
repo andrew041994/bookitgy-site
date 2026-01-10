@@ -41,7 +41,7 @@
           <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
 
           <div class="helper">
-            Passwords must be 6–8 characters and include uppercase, lowercase, a number, and a special character.
+            Passwords must be at least 6 characters and include uppercase, lowercase, a number, and a special character.
           </div>
 
           <button class="btn" type="submit">Reset password</button>
@@ -58,7 +58,7 @@
       const token = urlParams.get("token");
 
       const passwordRules = {
-        length: /^.{6,8}$/,
+        length: /^.{6,}$/,
         uppercase: /[A-Z]/,
         lowercase: /[a-z]/,
         number: /\d/,
