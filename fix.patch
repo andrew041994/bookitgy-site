@@ -1,22 +1,22 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/public/.well-known/assetlinks.json b/public/.well-known/assetlinks.json
-index 3fdac23b42ecad07fd6d73bb9d6cd25c389e338f..9afb4b142a3b12c74b97366e8a946cf7a119bcba 100644
---- a/public/.well-known/assetlinks.json
-+++ b/public/.well-known/assetlinks.json
-@@ -1,12 +1,12 @@
- [
-   {
-     "relation": ["delegate_permission/common.handle_all_urls"],
-     "target": {
-       "namespace": "android_app",
-       "package_name": "com.bookitgy.app",
-       "sha256_cert_fingerprints": [
--        "PASTE_SHA256_FINGERPRINT_HERE"
-+        "2E:C1:69:E2:01:9C:DE:A7:1B:57:B9:E3:3B:74:CA:B0:F6:2D:E8:D1:DA:1F:56:58:D5:3F:93:C8:C3:6B:A8:EF"
-       ]
-     }
-   }
- ]
+diff --git a/.well-known/assetlinks.json b/.well-known/assetlinks.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f89b0ea3b59e6a47a77f15325bc032d25f0bddf
+--- /dev/null
++++ b/.well-known/assetlinks.json
+@@ -0,0 +1,12 @@
++[
++  {
++    "relation": ["delegate_permission/common.handle_all_urls"],
++    "target": {
++      "namespace": "android_app",
++      "package_name": "com.bookitgy.app",
++      "sha256_cert_fingerprints": [
++        "YOUR_ANDROID_SHA256_CERT_FINGERPRINT"
++      ]
++    }
++  }
++]
  
 EOF
 )
