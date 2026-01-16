@@ -1,96 +1,41 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/u/index.html b/u/index.html
-new file mode 100644
-index 0000000000000000000000000000000000000000..f0175235db05575e82035d315d9738bef320c7e5
---- /dev/null
-+++ b/u/index.html
-@@ -0,0 +1,86 @@
-+<!doctype html>
-+<html lang="en">
-+  <head>
-+    <meta charset="utf-8" />
-+    <meta name="viewport" content="width=device-width,initial-scale=1" />
-+    <title>BookitGY</title>
-+    <meta
-+      name="description"
-+      content="Download BookitGY to connect with your provider."
-+    />
-+    <style>
-+      :root { --green:#16a34a; --bg:#0b0f0c; --card:#0f1711; --text:#e7f2ea; --muted:#b7c7bc; }
-+      * { box-sizing: border-box; }
-+      body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding: 32px 20px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:linear-gradient(160deg,#06110a,var(--bg)); color:var(--text); }
-+      main { width:100%; max-width: 520px; background: rgba(15,23,17,.9); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,.35); text-align:center; }
-+      .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:0.4px; justify-content:center; margin-bottom:16px; }
-+      .dot { width:12px; height:12px; border-radius:999px; background:var(--green); box-shadow:0 0 22px rgba(22,163,74,.55); }
-+      h1 { margin: 0 0 12px; font-size: 28px; }
-+      p { margin: 0 0 16px; color: var(--muted); line-height:1.5; }
-+      .actions { display:flex; flex-direction:column; gap:10px; margin-top: 18px; }
-+      .btn { display:inline-block; width:100%; padding: 12px 16px; border-radius: 12px; text-decoration:none; font-weight:700; border:none; cursor:pointer; }
-+      .btn.primary { background: var(--green); color: #041308; }
-+      .btn.secondary { border:1px solid rgba(255,255,255,.14); color: var(--text); background: rgba(255,255,255,.04); }
-+      .hint { font-size: 13px; color: rgba(183,199,188,.85); margin-top: 14px; }
-+    </style>
-+  </head>
-+  <body>
-+    <main>
-+      <div class="brand"><span class="dot"></span> BookitGY</div>
-+      <h1 id="headline">Download BookitGY</h1>
-+      <p id="message">To book with this provider, download the BookitGY app.</p>
-+      <div class="actions">
-+        <button class="btn primary" id="open-app" type="button">Open in app</button>
-+        <a class="btn secondary" id="ios-link" href="#" rel="noopener">Download on iOS</a>
-+        <a class="btn secondary" id="android-link" href="#" rel="noopener">Get it on Android</a>
-+        <button class="btn secondary" id="copy-link" type="button">Copy link</button>
-+      </div>
-+      <div class="hint" id="hint">After installing, tap this link again.</div>
-+    </main>
-+
-+    <script>
-+      const IOS_STORE_URL = "https://apps.apple.com";
-+      const ANDROID_STORE_URL = "https://play.google.com/store";
-+
-+      const pathParts = window.location.pathname.split("/").filter(Boolean);
-+      const username = pathParts.length > 1 ? pathParts[1] : "";
-+
-+      const headline = document.getElementById("headline");
-+      const message = document.getElementById("message");
-+      const openAppButton = document.getElementById("open-app");
-+      const copyLinkButton = document.getElementById("copy-link");
-+      const iosLink = document.getElementById("ios-link");
-+      const androidLink = document.getElementById("android-link");
-+
-+      iosLink.href = IOS_STORE_URL;
-+      androidLink.href = ANDROID_STORE_URL;
-+
-+      if (username) {
-+        const safeUsername = decodeURIComponent(username).replace(/[^\w.-]/g, "");
-+        headline.textContent = "Download BookitGY";
-+        message.textContent = `To book with @${safeUsername}, download the BookitGY app.`;
-+        openAppButton.addEventListener("click", () => {
-+          window.location.href = `bookitgy://u/${safeUsername}`;
-+        });
-+      } else {
-+        message.textContent = "Download BookitGY to book with your provider.";
-+        openAppButton.style.display = "none";
-+      }
-+
-+      copyLinkButton.addEventListener("click", async () => {
-+        try {
-+          await navigator.clipboard.writeText(window.location.href);
-+          copyLinkButton.textContent = "Link copied";
-+          setTimeout(() => {
-+            copyLinkButton.textContent = "Copy link";
-+          }, 2000);
-+        } catch (error) {
-+          copyLinkButton.textContent = "Copy failed";
-+          setTimeout(() => {
-+            copyLinkButton.textContent = "Copy link";
-+          }, 2000);
-+        }
-+      });
-+    </script>
-+  </body>
-+</html>
+diff --git a/vercel.json b/vercel.json
+index d510869df48b42c430a1f2d46e35cd9f1d922d57..85423bef4be544e4a38621b3b150847084613406 100644
+--- a/vercel.json
++++ b/vercel.json
+@@ -1,27 +1,32 @@
+ {
+   "headers": [
+     {
+       "source": "/.well-known/apple-app-site-association",
+       "headers": [
+         { "key": "Content-Type", "value": "application/json" },
+         { "key": "Cache-Control", "value": "public, max-age=3600" }
+       ]
+     },
+     {
+       "source": "/.well-known/assetlinks.json",
+       "headers": [
+         { "key": "Content-Type", "value": "application/json" }
+       ]
+     }
+   ],
+   "redirects": [
++    {
++      "source": "/termsof%20service",
++      "destination": "/termsofservice",
++      "permanent": true
++    },
+     {
+       "source": "/:path((?!\\.well-known/).*)",
+       "has": [
+         { "type": "host", "value": "bookitgy.com" }
+       ],
+       "destination": "https://www.bookitgy.com/:path",
+       "permanent": true
+     }
+   ]
+ }
  
 EOF
 )

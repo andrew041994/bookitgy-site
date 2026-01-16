@@ -16,6 +16,11 @@
   ],
   "redirects": [
     {
+      "source": "/termsof%20service",
+      "destination": "/termsofservice",
+      "permanent": true
+    },
+    {
       "source": "/:path((?!\\.well-known/).*)",
       "has": [
         { "type": "host", "value": "bookitgy.com" }
