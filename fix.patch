@@ -1,79 +1,193 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/index.html b/index.html
-index 1001c6bccde4702b82f5364eab6477ecb78b036a..7715a4f81d6a3e67ae1ed1e7a0dea5fadba4b144 100644
---- a/index.html
-+++ b/index.html
-@@ -16,70 +16,72 @@
-       .links a:hover { color:var(--text); }
-       .hero { display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; align-items:center; }
-       @media (max-width: 860px){ .hero { grid-template-columns:1fr; } }
-       .card { background: rgba(15,23,17,.78); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding: 26px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-       h1 { margin: 0 0 10px; font-size: 42px; line-height: 1.08; }
-       p { margin: 0 0 14px; color: var(--muted); line-height:1.5; }
-       .cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
-       .btn { display:inline-block; padding: 12px 16px; border-radius: 12px; text-decoration:none; font-weight:700; }
-       .btn.primary { background: var(--green); color: #041308; }
-       .btn.ghost { border:1px solid rgba(255,255,255,.14); color: var(--text); background: rgba(255,255,255,.04); }
-       .note { font-size: 12px; color: rgba(183,199,188,.85); margin-top:10px; }
-       .grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-top:18px; }
-       @media (max-width: 860px){ .grid { grid-template-columns:1fr; } }
-       .pill { padding:12px; border-radius: 14px; border:1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); color: var(--muted); }
-       footer { margin-top: 48px; color: rgba(183,199,188,.8); font-size: 13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-       footer a { color: rgba(183,199,188,.9); text-decoration:none; }
-       footer a:hover { color: var(--text); }
+diff --git a/reset-password/index.html b/reset-password/index.html
+index 5b52098fd75a961985230860c6d0d02fde429d77..993987318a074d2e4ebce2be518c9172ca3358db 100644
+--- a/reset-password/index.html
++++ b/reset-password/index.html
+@@ -19,142 +19,182 @@
+       input:focus { outline: 2px solid rgba(22,163,74,.5); border-color: rgba(22,163,74,.6); }
+       .btn { width:100%; margin-top:18px; padding: 12px 16px; border-radius: 12px; border:none; font-weight:700; cursor:pointer; background: var(--green); color: #041308; }
+       .helper { font-size: 12px; color: var(--muted); margin-top:8px; }
+       .status { margin-top: 16px; padding: 12px 14px; border-radius: 12px; font-size: 14px; }
+       .status.error { background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color: #fecaca; }
+       .status.success { background: rgba(22,163,74,.12); border:1px solid rgba(22,163,74,.35); color: #bbf7d0; }
+       .link { color: var(--text); text-decoration:none; }
+       .link:hover { text-decoration:underline; }
      </style>
    </head>
    <body>
      <div class="wrap">
-       <div class="nav">
+       <div class="card">
          <div class="brand"><span class="dot"></span> BookitGY</div>
-         <div class="links">
-           <a href="/privacy">Privacy</a>
-+          <a href="/termsofservice">Terms of Service</a>
-           <a href="/support">Support</a>
-         </div>
+         <h1>Reset your password</h1>
+         <p>Enter a new password below to finish resetting your BookitGY account.</p>
+ 
+         <form id="reset-form">
+           <label for="new-password">New password</label>
+           <input id="new-password" name="new-password" type="password" autocomplete="new-password" required />
+ 
+           <label for="confirm-password">Confirm new password</label>
+           <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
+ 
+           <div class="helper">
+-            Passwords must be at least 5 characters and include at least one uppercase and one lowercase letter.
++            Password must be at least 5 characters and include at least one uppercase and one lowercase letter.
+           </div>
+ 
+-          <button class="btn" type="submit">Reset password</button>
++          <div class="helper" id="password-rules" aria-live="polite">
++            <div id="rule-length" style="color:var(--danger)">• At least 5 characters</div>
++            <div id="rule-uppercase" style="color:var(--danger)">• At least 1 uppercase letter</div>
++            <div id="rule-lowercase" style="color:var(--danger)">• At least 1 lowercase letter</div>
++            <div id="rule-match" style="color:var(--danger)">• Passwords match</div>
++          </div>
++
++          <button id="reset-password-button" class="btn" type="submit" disabled>Reset password</button>
+         </form>
+ 
+         <div id="status" class="status" style="display:none"></div>
        </div>
- 
-       <div class="hero">
-         <div class="card">
-           <h1>Find and book services in Guyana.</h1>
-           <p>BookitGY helps customers discover local providers and schedule appointments quickly.</p>
- 
-           <div class="cta">
-             <!-- Replace # with your store links later -->
-             <a class="btn primary" href="#" aria-label="Get it on Google Play">Google Play (coming soon)</a>
-             <a class="btn ghost" href="#" aria-label="Download on the App Store">App Store (coming soon)</a>
-           </div>
- 
-           <div class="note">
-             Tip: Once your store links are live, paste them into the buttons above.
-           </div>
- 
-           <div class="grid">
-             <div class="pill"><strong style="color:var(--text)">Nearby search</strong><br/>Find providers close to you.</div>
-             <div class="pill"><strong style="color:var(--text)">Appointments</strong><br/>Book and manage bookings.</div>
-             <div class="pill"><strong style="color:var(--text)">Offline payments</strong><br/>Payments happen directly with the provider.</div>
-           </div>
-         </div>
- 
-         <div class="card">
-           <h2 style="margin:0 0 10px">Contact</h2>
-           <p style="margin:0 0 10px">Need help? Reach us anytime:</p>
-           <p style="margin:0"><strong style="color:var(--text)">Email:</strong> <a href="mailto:bookitgy.service@gmail.com" style="color:var(--text)">bookitgy.service@gmail.com</a></p>
-           <p class="note" style="margin-top:12px">This site is used for app compliance and support. The core product is the mobile app.</p>
-         </div>
-       </div>
- 
-       <footer>
-         <div>© <span id="y"></span> BookitGY</div>
-         <div>
-           <a href="/privacy">Privacy Policy</a> ·
-+          <a href="/termsofservice">Terms of Service</a> ·
-           <a href="/support">Support</a>
-         </div>
-       </footer>
      </div>
-     <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+ 
+     <script type="module">
+       const form = document.getElementById("reset-form");
+       const statusEl = document.getElementById("status");
++      const newPasswordInput = document.getElementById("new-password");
++      const confirmPasswordInput = document.getElementById("confirm-password");
++      const resetButton = document.getElementById("reset-password-button");
++      const lengthRuleEl = document.getElementById("rule-length");
++      const uppercaseRuleEl = document.getElementById("rule-uppercase");
++      const lowercaseRuleEl = document.getElementById("rule-lowercase");
++      const matchRuleEl = document.getElementById("rule-match");
+       const urlParams = new URLSearchParams(window.location.search);
+       const token = urlParams.get("token");
+ 
+       const passwordRules = {
+         length: /^.{5,}$/,
+         uppercase: /[A-Z]/,
+         lowercase: /[a-z]/,
+       };
+ 
+       const setStatus = (message, type) => {
+         statusEl.textContent = message;
+         statusEl.className = `status ${type}`;
+         statusEl.style.display = "block";
+       };
+ 
+       const matchesRules = (value) => {
+         return (
+           passwordRules.length.test(value) &&
+           passwordRules.uppercase.test(value) &&
+           passwordRules.lowercase.test(value)
+         );
+       };
+ 
++      const updateRuleIndicator = (element, isValid) => {
++        element.style.color = isValid ? "var(--green)" : "var(--danger)";
++      };
++
++      const updateValidationState = () => {
++        const newPassword = newPasswordInput.value;
++        const confirmPassword = confirmPasswordInput.value;
++        const hasLength = passwordRules.length.test(newPassword);
++        const hasUppercase = passwordRules.uppercase.test(newPassword);
++        const hasLowercase = passwordRules.lowercase.test(newPassword);
++        const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
++        const isFormValid = hasLength && hasUppercase && hasLowercase && passwordsMatch && Boolean(token);
++
++        updateRuleIndicator(lengthRuleEl, hasLength);
++        updateRuleIndicator(uppercaseRuleEl, hasUppercase);
++        updateRuleIndicator(lowercaseRuleEl, hasLowercase);
++        updateRuleIndicator(matchRuleEl, passwordsMatch);
++
++        resetButton.disabled = !isFormValid;
++      };
++
+ 
+       const apiBaseUrl =
+         import.meta.env?.VITE_API_BASE_URL ||
+         window.API_BASE_URL ||
+         "https://bookitgy.onrender.com";
+       const resetEndpointPath = "/auth/reset-password";
+ 
+       const buildApiUrl = (path) => {
+         if (!apiBaseUrl) {
+           return path;
+         }
+         return `${apiBaseUrl.replace(/\/$/, "")}${path}`;
+       };
+ 
+       const isDevMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+ 
++      newPasswordInput.addEventListener("input", updateValidationState);
++      confirmPasswordInput.addEventListener("input", updateValidationState);
++      updateValidationState();
++
+       form.addEventListener("submit", async (event) => {
+         event.preventDefault();
+         statusEl.style.display = "none";
+ 
+         if (!token) {
+           setStatus("This reset link is missing a token. Please request a new password reset.", "error");
+           return;
+         }
+ 
+-        const newPassword = document.getElementById("new-password").value;
+-        const confirmPassword = document.getElementById("confirm-password").value;
++        const newPassword = newPasswordInput.value;
++        const confirmPassword = confirmPasswordInput.value;
+ 
+         // Client-side validation for password match and rules.
+         if (newPassword !== confirmPassword) {
+           setStatus("Passwords do not match. Please try again.", "error");
+           return;
+         }
+ 
+         if (!matchesRules(newPassword)) {
+           setStatus("Password does not meet the required rules.", "error");
+           return;
+         }
+ 
+         try {
+           const requestUrl = buildApiUrl(resetEndpointPath);
+ 
+           if (isDevMode) {
+             console.info("Reset password request URL:", requestUrl);
+           }
+ 
+           const response = await fetch(requestUrl, {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ token, new_password: newPassword }),
+           });
+ 
+           if (response.ok) {
+             setStatus("Password reset successful. You can now log in.", "success");
+             statusEl.innerHTML = `Password reset successful. <a class="link" href="/login">Go to login</a>.`;
+             form.reset();
++            updateValidationState();
+             return;
+           }
+ 
+           if (response.status === 404) {
+             setStatus("Password reset service unavailable.", "error");
+             return;
+           }
+ 
+           const payload = await response.json().catch(() => ({}));
+           const tokenErrorStatuses = [400, 401, 422];
+ 
+           if (tokenErrorStatuses.includes(response.status)) {
+             setStatus("This reset link is invalid or expired. Please request a new password reset.", "error");
+             return;
+           }
+ 
+           setStatus("We couldn't reset your password right now. Please try again later.", "error");
+         } catch (error) {
+           // Network or unexpected errors.
+           setStatus("We couldn't reset your password right now. Please try again later.", "error");
+         }
+       });
+     </script>
    </body>
  </html>
  

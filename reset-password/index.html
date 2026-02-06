@@ -41,10 +41,17 @@
           <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
 
           <div class="helper">
-            Passwords must be at least 5 characters and include at least one uppercase and one lowercase letter.
+            Password must be at least 5 characters and include at least one uppercase and one lowercase letter.
           </div>
 
-          <button class="btn" type="submit">Reset password</button>
+          <div class="helper" id="password-rules" aria-live="polite">
+            <div id="rule-length" style="color:var(--danger)">• At least 5 characters</div>
+            <div id="rule-uppercase" style="color:var(--danger)">• At least 1 uppercase letter</div>
+            <div id="rule-lowercase" style="color:var(--danger)">• At least 1 lowercase letter</div>
+            <div id="rule-match" style="color:var(--danger)">• Passwords match</div>
+          </div>
+
+          <button id="reset-password-button" class="btn" type="submit" disabled>Reset password</button>
         </form>
 
         <div id="status" class="status" style="display:none"></div>
@@ -54,6 +61,13 @@
     <script type="module">
       const form = document.getElementById("reset-form");
       const statusEl = document.getElementById("status");
+      const newPasswordInput = document.getElementById("new-password");
+      const confirmPasswordInput = document.getElementById("confirm-password");
+      const resetButton = document.getElementById("reset-password-button");
+      const lengthRuleEl = document.getElementById("rule-length");
+      const uppercaseRuleEl = document.getElementById("rule-uppercase");
+      const lowercaseRuleEl = document.getElementById("rule-lowercase");
+      const matchRuleEl = document.getElementById("rule-match");
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get("token");
 
@@ -77,6 +91,27 @@
         );
       };
 
+      const updateRuleIndicator = (element, isValid) => {
+        element.style.color = isValid ? "var(--green)" : "var(--danger)";
+      };
+
+      const updateValidationState = () => {
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const hasLength = passwordRules.length.test(newPassword);
+        const hasUppercase = passwordRules.uppercase.test(newPassword);
+        const hasLowercase = passwordRules.lowercase.test(newPassword);
+        const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
+        const isFormValid = hasLength && hasUppercase && hasLowercase && passwordsMatch && Boolean(token);
+
+        updateRuleIndicator(lengthRuleEl, hasLength);
+        updateRuleIndicator(uppercaseRuleEl, hasUppercase);
+        updateRuleIndicator(lowercaseRuleEl, hasLowercase);
+        updateRuleIndicator(matchRuleEl, passwordsMatch);
+
+        resetButton.disabled = !isFormValid;
+      };
+
 
       const apiBaseUrl =
         import.meta.env?.VITE_API_BASE_URL ||
@@ -93,6 +128,10 @@
 
       const isDevMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 
+      newPasswordInput.addEventListener("input", updateValidationState);
+      confirmPasswordInput.addEventListener("input", updateValidationState);
+      updateValidationState();
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         statusEl.style.display = "none";
@@ -102,8 +141,8 @@
           return;
         }
 
-        const newPassword = document.getElementById("new-password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
 
         // Client-side validation for password match and rules.
         if (newPassword !== confirmPassword) {
@@ -133,6 +172,7 @@
             setStatus("Password reset successful. You can now log in.", "success");
             statusEl.innerHTML = `Password reset successful. <a class="link" href="/login">Go to login</a>.`;
             form.reset();
+            updateValidationState();
             return;
           }
 
