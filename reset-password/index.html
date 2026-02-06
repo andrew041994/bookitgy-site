@@ -41,7 +41,7 @@
           <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required />
 
           <div class="helper">
-            Passwords must be at least 6 characters and include uppercase, lowercase, a number, and a special character.
+            Passwords must be at least 5 characters and include at least one uppercase and one lowercase letter.
           </div>
 
           <button class="btn" type="submit">Reset password</button>
@@ -58,11 +58,9 @@
       const token = urlParams.get("token");
 
       const passwordRules = {
-        length: /^.{6,}$/,
+        length: /^.{5,}$/,
         uppercase: /[A-Z]/,
         lowercase: /[a-z]/,
-        number: /\d/,
-        special: /[^A-Za-z0-9]/,
       };
 
       const setStatus = (message, type) => {
@@ -75,11 +73,10 @@
         return (
           passwordRules.length.test(value) &&
           passwordRules.uppercase.test(value) &&
-          passwordRules.lowercase.test(value) &&
-          passwordRules.number.test(value) &&
-          passwordRules.special.test(value)
+          passwordRules.lowercase.test(value)
         );
       };
+
 
       const apiBaseUrl =
         import.meta.env?.VITE_API_BASE_URL ||
